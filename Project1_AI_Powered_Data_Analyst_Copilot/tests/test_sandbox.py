@@ -43,3 +43,4 @@ def test_os_reference_rejected(sample_df):
 def test_syntax_error_handled(sample_df):
     with pytest.raises(sandbox.SandboxError):
         sandbox.run_pandas_code("result = df[[", sample_df)
+

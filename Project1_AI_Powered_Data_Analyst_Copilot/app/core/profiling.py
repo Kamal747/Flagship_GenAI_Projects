@@ -79,3 +79,4 @@ def full_profile_summary(df: pd.DataFrame) -> str:
             f"({r['missing_pct']}%), unique={r['unique']}"
         )
     return "\n".join(lines)
+

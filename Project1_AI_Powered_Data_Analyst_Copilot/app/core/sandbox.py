@@ -100,3 +100,4 @@ def run_pandas_code(code: str, df: pd.DataFrame, timeout_seconds: int = 5):
     if status == "error":
         raise SandboxError(f"Error while running the generated code: {payload}")
     return payload
+

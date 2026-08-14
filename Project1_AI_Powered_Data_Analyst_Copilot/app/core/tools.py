@@ -116,7 +116,17 @@ TOOLS_SCHEMA = [
                                         "Use this whenever the needed columns don't already exist "
                                         "as-is in the dataset.",
                     },
-                    "title": {"type": "string", "description": "Chart title."},
+                    "title": {
+                        "type": "string",
+                        "description": "A short DESCRIPTION of what the chart shows — e.g. "
+                                        "'number of titles released each year' or 'top 10 "
+                                        "countries by number of Netflix titles'. Do NOT include "
+                                        "the chart type name (like 'Bar Chart' or 'Line Chart') — "
+                                        "that is added automatically to produce the final title "
+                                        "'[Chart Type] – [Your description]' (capitalization of "
+                                        "the description's first letter is also handled "
+                                        "automatically). Keep it concise, one short phrase.",
+                    },
                 },
                 "required": ["chart_type"],
             },
@@ -230,3 +240,4 @@ def execute_tool(name: str, arguments: dict, df: pd.DataFrame, sandbox_timeout: 
 
     except Exception as e:  # noqa: BLE001 - convert to a friendly message for the LLM
         return f"Tool '{name}' failed with error: {e}", None
+

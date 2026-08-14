@@ -32,17 +32,19 @@ def render_chat_view() -> None:
     st.session_state.setdefault("qa_history", [])
     st.session_state.setdefault("dashboard_charts", [])
 
-    for turn in st.session_state["chat_history"]:
+    for turn_index, turn in enumerate(st.session_state["chat_history"]):
         with st.chat_message(turn["role"]):
             st.markdown(turn["content"])
             for chart_index, chart in enumerate(turn.get("charts", [])):
                 st.plotly_chart(
-                    chart,
-                    width="stretch",
-                    key=f"chat_{turn['role']}_{chart_index}_{id(turn)}"
-            )
-            for table in turn.get("tables", []):
-                st.dataframe(dedupe_columns(table), width="stretch")
+                    chart, width="stretch",
+                    key=f"chat_{turn['role']}_{turn_index}_{chart_index}",
+                )
+            for table_index, table in enumerate(turn.get("tables", [])):
+                st.dataframe(
+                    dedupe_columns(table), width="stretch",
+                    key=f"chat_table_{turn_index}_{table_index}",
+                )
             if turn.get("tool_trace"):
                 with st.expander("🔍 Tool execution trace (for transparency)"):
                     for step in turn["tool_trace"]:
@@ -107,3 +109,4 @@ def render_chat_view() -> None:
         )
 
     st.rerun()
+

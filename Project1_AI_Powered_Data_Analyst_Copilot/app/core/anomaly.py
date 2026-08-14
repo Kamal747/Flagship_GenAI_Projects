@@ -56,3 +56,4 @@ def pct_change_summary(trend_df: pd.DataFrame, value_col: str = "sum") -> dict:
         "last_period_value": round(float(last), 2),
         "pct_change": round(float(pct), 2),
     }
+

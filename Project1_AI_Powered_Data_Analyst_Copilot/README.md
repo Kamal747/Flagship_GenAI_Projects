@@ -64,7 +64,7 @@ The core design principle: **the LLM never states a number from memory.**
 | Layer | Choice |
 |---|---|
 | UI | Streamlit |
-| LLM | Groq (`llama-3.3-70b-versatile`), native tool/function calling |
+| LLM | Groq (`openai/gpt-oss-120b`), native tool/function calling |
 | Data | Pandas, NumPy, openpyxl |
 | SQL | DuckDB (zero-copy query on the real dataframe) |
 | Charts | Plotly |
@@ -164,3 +164,4 @@ docker run -p 8501:8501 --env-file .env data-analyst-copilot
 ## 📄 License
 
 MIT — free to use as a portfolio/demo project.
+

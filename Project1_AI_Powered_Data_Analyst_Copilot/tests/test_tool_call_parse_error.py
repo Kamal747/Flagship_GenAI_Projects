@@ -176,3 +176,4 @@ def test_partial_progress_preserved_for_any_llm_engine_error_not_just_parse(sing
     assert len(tool_messages) == 2
     assert "1 chart(s) created so far" in tool_messages[0]["content"]
     assert "2 chart(s) created so far" in tool_messages[1]["content"]
+

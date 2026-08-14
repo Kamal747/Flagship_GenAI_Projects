@@ -59,3 +59,4 @@ def test_build_chart_data_code_with_duplicate_columns_is_sanitized():
     text, fig = tools.execute_tool("build_chart", args, df)
     assert "successfully" in text
     assert fig is not None
+

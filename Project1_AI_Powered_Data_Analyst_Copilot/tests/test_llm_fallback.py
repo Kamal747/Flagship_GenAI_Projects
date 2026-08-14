@@ -159,3 +159,4 @@ def test_genuine_bad_request_does_not_trigger_fallback(fallback_chain):
         llm_engine._create_completion_with_fallback(client, messages=[])
 
     assert client.chat.completions.create.call_count == 1
+

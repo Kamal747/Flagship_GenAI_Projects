@@ -11,7 +11,7 @@ load_dotenv()
 # Default ordered fallback chain: tried in order until one succeeds or all
 # are exhausted. Override via GROQ_MODEL_FALLBACK_CHAIN (comma-separated) in .env.
 _DEFAULT_FALLBACK_CHAIN = [
-    "llama-3.3-70b-versatile",
+    "openai/gpt-oss-120b",
 ]
 
 
@@ -31,7 +31,7 @@ def _parse_fallback_chain() -> tuple[str, ...]:
 @dataclass(frozen=True)
 class Settings:
     groq_api_key: str = os.getenv("GROQ_API_KEY", "")
-    groq_model: str = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    groq_model: str = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
     groq_model_fallback_chain: tuple[str, ...] = field(default_factory=_parse_fallback_chain)
     max_upload_mb: int = int(os.getenv("MAX_UPLOAD_MB", "200"))
     sandbox_timeout_seconds: int = int(os.getenv("SANDBOX_TIMEOUT_SECONDS", "5"))
@@ -53,3 +53,4 @@ def validate_config() -> list[str]:
             "and add your Groq API key, or set it as an environment variable."
         )
     return problems
+

@@ -38,3 +38,4 @@ def test_build_chart_without_data_code_still_works():
     text, fig = tools.execute_tool("build_chart", args, df)
     assert "successfully" in text
     assert fig is not None
+

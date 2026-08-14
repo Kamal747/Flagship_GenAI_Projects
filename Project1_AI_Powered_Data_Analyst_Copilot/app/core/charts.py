@@ -85,27 +85,90 @@ def _relevant_columns(chart_type: str, x, y, color, size, z) -> list[str | None]
     return always_relevant.get(chart_type, [x, y, color, size])
 
 
-def _default_chart_title(chart_type: str, x, y, path) -> str:
-    """Every chart must clearly show what it is, even if the caller (LLM)
-    forgot to pass a title. Always incorporates the chart type name so a
-    chart is identifiable at a glance, e.g. in the Dashboard tab."""
-    label = chart_type.replace("_", " ").title()
+# Human-readable display label per chart type — used to build the
+# "[Chart Type] – [description]" title format automatically for every chart
+# (all 30 types). This is just type-name labeling, not hardcoded example
+# titles: the description half is always generated dynamically (from the
+# caller's title text or, if absent, from the actual x/y/path columns used).
+_CHART_TYPE_LABELS = {
+    "line": "Line Chart",
+    "area": "Area Chart",
+    "bar": "Bar Chart",
+    "bar_horizontal": "Horizontal Bar Chart",
+    "grouped_bar": "Grouped Bar Chart",
+    "stacked_bar": "Stacked Bar Chart",
+    "polar_bar": "Polar Bar Chart",
+    "scatter": "Scatter Plot",
+    "bubble": "Bubble Chart",
+    "scatter_3d": "3D Scatter Plot",
+    "density_heatmap": "Density Heatmap",
+    "contour": "Contour Plot",
+    "pie": "Pie Chart",
+    "donut": "Donut Chart",
+    "treemap": "Treemap",
+    "sunburst": "Sunburst Chart",
+    "histogram": "Histogram",
+    "box": "Box Plot",
+    "violin": "Violin Plot",
+    "strip": "Strip Plot",
+    "ecdf": "ECDF Plot",
+    "heatmap": "Heatmap",
+    "funnel": "Funnel Chart",
+    "waterfall": "Waterfall Chart",
+    "sankey": "Sankey Diagram",
+    "radar": "Radar Chart",
+    "gauge": "Gauge Chart",
+    "bullet": "Bullet Chart",
+    "candlestick": "Candlestick Chart",
+    "choropleth": "Choropleth Map",
+}
+
+
+def _chart_type_label(chart_type: str) -> str:
+    return _CHART_TYPE_LABELS.get(chart_type, chart_type.replace("_", " ").title())
+
+
+def _default_description(chart_type: str, x, y, path) -> str:
+    """Generates a short, dynamic description of what the chart shows from
+    its actual columns — used only when the caller didn't supply their own
+    description text. Never includes the chart type name (that's added
+    separately by `_format_title`), so it stays reusable for any type."""
     if chart_type in ("treemap", "sunburst") and path:
-        return f"{label}: {y or 'Count'} by {' > '.join(path)}"
+        return f"{y or 'count'} by {' > '.join(path)}"
     if chart_type == "heatmap":
-        return "Correlation Heatmap"
+        return "correlation between numeric columns"
     if chart_type == "sankey":
-        return "Sankey Diagram: Flow Breakdown"
+        return "flow breakdown between stages"
     if chart_type == "candlestick":
-        return "Candlestick Chart"
-    if chart_type == "choropleth" and x and y:
-        return f"{label}: {y} by {x}"
+        return "price movement over time"
     if x and y:
-        return f"{label}: {y} by {x}"
+        return f"{y} by {x}"
     if x:
-        return f"{label}: {x}"
+        return f"{x}"
     if y:
-        return f"{label}: {y}"
+        return f"{y}"
+    return "overview"
+
+
+def _format_title(chart_type: str, description: str) -> str:
+    """Builds the final, consistent '[Chart Type] – [description]' title for
+    every chart, regardless of whether the description came from the caller
+    (LLM-provided text) or was auto-generated from columns. Guards against
+    the description already containing the chart type name (e.g. if the LLM
+    includes it despite instructions not to) to avoid a doubled-up title."""
+    label = _chart_type_label(chart_type)
+    desc = (description or "").strip()
+
+    if desc.lower().startswith(label.lower()):
+        desc = desc[len(label):].lstrip(" -–:")
+    # Some callers might pass just the bare chart_type word instead of the
+    # full display label (e.g. "bar" instead of "Bar chart") — strip that too.
+    elif desc.lower().startswith(chart_type.lower()):
+        desc = desc[len(chart_type):].lstrip(" -–:_")
+
+    if desc:
+        desc = desc[0].upper() + desc[1:]  # capitalize first letter; safe for proper nouns too
+        return f"{label} – {desc}"
     return label
 
 
@@ -131,49 +194,12 @@ def build_chart(
     if chart_type not in SUPPORTED_TYPES:
         raise ChartError(f"Unsupported chart type '{chart_type}'. Supported: {sorted(SUPPORTED_TYPES)}")
 
-    # Always have a real, descriptive title — never blank, never generic.
+    # Every chart title follows "[Chart Type] – [description]" automatically.
     # Computed up front so it's available to every branch below (both the
     # plotly.express calls, which take `title=...`, and the manual
     # go.Figure() constructions, which set it via update_layout afterward).
-    title = title.strip() if title and title.strip() else _default_chart_title(chart_type, x, y, path)
-
-    chart_type_labels = {
-    "line": "Line chart",
-    "area": "Area chart",
-    "bar": "Bar chart",
-    "bar_horizontal": "Horizontal bar chart",
-    "grouped_bar": "Grouped bar chart",
-    "stacked_bar": "Stacked bar chart",
-    "scatter": "Scatter plot",
-    "bubble": "Bubble chart",
-    "pie": "Pie chart",
-    "donut": "Donut chart",
-    "treemap": "Treemap",
-    "sunburst": "Sunburst chart",
-    "histogram": "Histogram",
-    "box": "Box plot",
-    "violin": "Violin plot",
-    "funnel": "Funnel chart",
-    "waterfall": "Waterfall chart",
-    "radar": "Radar chart",
-    "gauge": "Gauge chart",
-    "heatmap": "Heatmap",
-    "scatter_3d": "3D scatter plot",
-    "density_heatmap": "Density heatmap",
-    "contour": "Contour plot",
-    "strip": "Strip plot",
-    "ecdf": "ECDF plot",
-    "polar_bar": "Polar bar chart",
-    "sankey": "Sankey diagram",
-    "bullet": "Bullet chart",
-    "candlestick": "Candlestick chart",
-    "choropleth": "Choropleth map",
-    }
-
-    label = chart_type_labels.get(chart_type, chart_type.title())
-
-    if not title.lower().startswith(label.lower()):
-        title = f"{label} – {title}"
+    raw_description = title.strip() if title and title.strip() else _default_description(chart_type, x, y, path)
+    title = _format_title(chart_type, raw_description)
 
     if chart_type in ("treemap", "sunburst"):
         _require_columns(df, [y, color])
@@ -190,6 +216,26 @@ def build_chart(
         counted = df[x].value_counts().reset_index()
         counted.columns = [x, "count"]
         df, y = counted, "count"
+
+    # A trend/comparison chart's value axis MUST be numeric — plotting a raw
+    # ID/category column (e.g. a row-level "show_id") as the y-value produces
+    # a meaningless, unreadable chart (a spike/spaghetti of connected points
+    # instead of a proper aggregated trend). Catch that mistake here with a
+    # clear error rather than silently rendering garbage, so the caller (the
+    # LLM) gets feedback and retries with a proper aggregation instead.
+    # bar_horizontal is excluded — it already auto-detects which of x/y is
+    # numeric regardless of argument order.
+    _NUMERIC_Y_REQUIRED = {
+        "line", "area", "bar", "grouped_bar", "stacked_bar",
+        "scatter", "bubble", "waterfall", "radar",
+    }
+    if chart_type in _NUMERIC_Y_REQUIRED and y and not pd.api.types.is_numeric_dtype(df[y]):
+        raise ChartError(
+            f"A {chart_type} chart needs a numeric 'y' value (e.g. a count, sum, or average), "
+            f"but '{y}' is not numeric (it looks like an ID/category column instead). "
+            f"Aggregate the data first — e.g. group by '{x}' and count/sum rows — via 'data_code', "
+            f"then chart the aggregated result."
+        )
 
     try:
         if chart_type == "line":
@@ -454,3 +500,4 @@ def _apply_readable_styling(fig: go.Figure, chart_type: str, has_color_split: bo
             fig.update_traces(line=dict(width=3), marker=dict(size=8), selector=dict(mode="lines+markers"))
         except Exception:  # noqa: BLE001 - styling is best-effort, never fatal
             pass
+

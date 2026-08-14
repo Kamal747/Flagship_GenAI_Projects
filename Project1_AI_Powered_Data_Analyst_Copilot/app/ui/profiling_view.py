@@ -27,3 +27,4 @@ def render_profiling_view() -> None:
         st.dataframe(corr, width="stretch")
     else:
         st.caption("Not enough numeric columns for a correlation matrix.")
+

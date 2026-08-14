@@ -45,3 +45,4 @@ def run_sql(sql: str, df: pd.DataFrame, table_name: str = "dataset") -> pd.DataF
         return result
     finally:
         con.close()
+

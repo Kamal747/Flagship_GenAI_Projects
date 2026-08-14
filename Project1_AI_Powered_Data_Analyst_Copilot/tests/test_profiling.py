@@ -40,3 +40,4 @@ def test_column_profile_numeric_mean_matches_pandas():
 def test_numeric_correlations_none_when_insufficient_columns():
     df = pd.DataFrame({"only_one": [1, 2, 3]})
     assert profiling.numeric_correlations(df) is None
+

@@ -20,3 +20,4 @@ def test_pct_change_summary_computes_correctly():
     summary = anomaly.pct_change_summary(trend_df)
     assert summary["available"] is True
     assert summary["pct_change"] == 50.0
+

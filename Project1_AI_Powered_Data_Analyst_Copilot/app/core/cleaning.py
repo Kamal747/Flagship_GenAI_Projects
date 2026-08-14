@@ -143,3 +143,4 @@ def apply_suggestion(df: pd.DataFrame, suggestion_id: str) -> pd.DataFrame:
         return df
 
     return df
+

@@ -41,3 +41,4 @@ def render_dashboard_view() -> None:
                     width="stretch",
                     key=f"dashboard_chart_{idx}",
                 )
+

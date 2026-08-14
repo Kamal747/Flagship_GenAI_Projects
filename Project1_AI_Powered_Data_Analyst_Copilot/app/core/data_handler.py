@@ -99,3 +99,4 @@ def load_file(uploaded_file, max_upload_mb: int = 200) -> dict[str, LoadedDatase
         raise DataLoadError(f"Could not parse the file — it may be malformed. Details: {e}")
     except Exception as e:  # noqa: BLE001 - surface as friendly error
         raise DataLoadError(f"Unexpected error while reading the file: {e}")
+

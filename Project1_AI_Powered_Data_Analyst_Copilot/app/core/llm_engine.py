@@ -303,3 +303,4 @@ def generate_report_narrative(structured_findings: dict) -> str:
         raise LLMEngineError(f"Could not generate report narrative: {e}")
 
     return response.choices[0].message.content or "Report generation returned no content."
+

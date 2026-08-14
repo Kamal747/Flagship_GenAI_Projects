@@ -224,3 +224,4 @@ def test_bar_horizontal_correct_with_reversed_arg_order(grouped_df):
     assert fig.data[0].orientation == "h"
     assert list(fig.data[0].x) == list(grouped_df["revenue"])
     assert list(fig.data[0].y) == list(grouped_df["region"])
+
