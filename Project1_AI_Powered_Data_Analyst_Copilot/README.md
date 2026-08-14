@@ -1,5 +1,9 @@
 # 📊 AI-Powered Data Analyst Copilot
 
+## 🌐 Live Demo
+
+🔗 https://flagshipgenaiprojects-eqfp6qppqehdtnbvivkrtb.streamlit.app
+
 An AI copilot that lets you upload a CSV/Excel file and analyze it through natural-language conversation — with every number grounded in real Pandas/SQL execution, never LLM guesswork.
 
 > **Flagship project #1** in an ongoing collection of production-oriented GenAI applications.
