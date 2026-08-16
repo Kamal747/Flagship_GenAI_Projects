@@ -1,5 +1,9 @@
 # ⚡ AI-Powered Electricity Bill Calculator & Comparison Chatbot
 
+## 🌐 Live Demo
+
+🔗 https://flagshipgenaiprojects-guu4pars6ordu6saktgsgh.streamlit.app
+
 Calculate what the SAME electricity consumption would cost under the **old tariff policy** (previous government) versus the **new tariff policy** (current government) — with a deterministic, slab-wise breakdown and an AI chatbot to explain the results in plain language.
 
 > **Flagship project #2** in an ongoing collection of production-oriented GenAI applications.
